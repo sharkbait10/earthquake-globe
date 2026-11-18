@@ -272,19 +272,47 @@ function updateRangeLabel() {
 $('clearRange').onclick = () => { range = null; updateRangeLabel(); render(); };
 
 // ---------- load data ----------
-async function load() {
-  $('sum').textContent = 'Loading the latest earthquakes from USGS…';
-  applyTheme();
+const FEED_TIMEOUT_MS = 15000;
 
-  // Land outlines are decoration: if they fail, still show the quakes.
+// Land outlines are decoration: if they fail, still show the quakes.
+function loadLand() {
   fetch(LAND_URL).then(r => r.json())
     .then(topo => { world.polygonsData(topojson.feature(topo, topo.objects.land).features); applyTheme(); })
     .catch(err => console.warn('Land outlines failed to load', err));
+}
 
+function feedErrorMessage(err) {
+  if (!navigator.onLine) return 'It looks like you’re offline. Check your internet connection, then try again.';
+  if (err.name === 'AbortError') return 'The USGS server is taking too long to respond. It may be busy; try again in a moment.';
+  if (err.status) return `The USGS server answered with an error (${err.status}). It’s usually temporary; try again in a minute or two.`;
+  return 'The USGS earthquake service didn’t respond. It may be briefly down, or something on your network is blocking it. Try again in a moment.';
+}
+
+function showFeedError(err) {
+  $('noticeBody').textContent = feedErrorMessage(err);
+  $('notice').hidden = false;
+  $('retry').disabled = false;
+  $('retry').textContent = 'Try again';
+  if (!quakes.length) $('sum').textContent = 'No earthquake data loaded yet.';
+  $('retry').focus();
+}
+
+$('retry').onclick = () => {
+  $('retry').disabled = true;
+  $('retry').textContent = 'Trying…';
+  loadFeed();
+};
+window.addEventListener('online', () => { if (!$('notice').hidden) $('retry').click(); });
+
+async function loadFeed() {
+  $('sum').textContent = 'Loading the latest earthquakes from USGS…';
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FEED_TIMEOUT_MS);
   try {
-    const res = await fetch(FEED_URL);
-    if (!res.ok) throw new Error(`USGS feed returned ${res.status}`);
+    const res = await fetch(FEED_URL, { signal: ctrl.signal, cache: 'no-store' });
+    if (!res.ok) throw Object.assign(new Error(`USGS feed returned ${res.status}`), { status: res.status });
     const geo = await res.json();
+    if (!Array.isArray(geo.features)) throw new Error('Unexpected feed format');
     quakes = geo.features
       .filter(f => f.properties.mag != null && f.geometry)
       .map(f => {
@@ -298,11 +326,16 @@ async function load() {
     tMax = geo.metadata.generated;
     tMin = tMax - 7 * DAY;
     $('src').innerHTML = `Data: <a href="https://earthquake.usgs.gov/earthquakes/feed/" target="_blank" rel="noopener">USGS earthquake feed</a>, magnitude 2.5 and above, updated ${new Date(tMax).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}. Land outlines from Natural Earth.`;
+    $('notice').hidden = true;
     render();
   } catch (err) {
-    console.error(err);
-    $('sum').textContent = 'Could not load the USGS earthquake feed. Check your connection and reload the page.';
+    console.error('USGS feed failed to load', err);
+    showFeedError(err);
+  } finally {
+    clearTimeout(timer);
   }
 }
 
-load();
+applyTheme();
+loadLand();
+loadFeed();

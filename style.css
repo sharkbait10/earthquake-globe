@@ -68,3 +68,10 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
   .detail{top:auto;bottom:12px;right:12px;left:12px;width:auto;transform-origin:bottom center}
 }
 @media (prefers-reduced-motion:reduce){.detail{transition:none}}
+/* feed error notice */
+.notice{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(360px,calc(100% - 32px));background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--rule);border-radius:14px;padding:20px 22px;z-index:5;text-align:center}
+.notice[hidden]{display:none}
+.notice-title{font-family:"Instrument Serif",Georgia,serif;font-size:1.6rem;line-height:1.1;margin:0 0 .5rem}
+.notice-body{margin:0 0 14px;color:var(--muted);font-size:.92rem}
+.notice button{border:0;background:var(--ink);color:var(--bg);font:inherit;font-weight:500;padding:7px 18px;border-radius:99px;cursor:pointer}
+.notice button:disabled{opacity:.6;cursor:progress}
