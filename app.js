@@ -170,7 +170,8 @@ function render() {
       }).join('')
     : [[10, 'Shallow, under 70 km'], [150, 'Intermediate'], [500, 'Deep, over 300 km']].map(([d, l]) =>
         `<span><i style="width:10px;height:10px;background:${colour({ depth: d })}"></i>${l}</span>`).join(''))
-    + (lastVisit != null ? `<span><i style="width:10px;height:10px;background:none;border:2px solid ${focus}"></i>New since last visit</span>` : '');
+    + (lastVisit != null ? `<span><i style="width:10px;height:10px;background:none;border:2px solid ${focus}"></i>New since last visit</span>` : '')
+    + (typeof hazardLegend === 'function' ? hazardLegend() : '');
 
   drawStrip();
 }
