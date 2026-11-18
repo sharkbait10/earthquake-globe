@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seven days of earthquakes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <div id="stage">
+    <div id="globe" aria-label="Interactive globe of earthquakes. Drag to rotate, scroll to zoom, click a point for details." role="img"></div>
+    <header>
+      <h1>Seven days of earthquakes</h1>
+      <p class="sum" id="sum"></p>
+    </header>
+    <div class="legend" id="legend"></div>
+    <aside class="detail" id="detail" hidden aria-live="polite">
+      <button class="close" id="close" aria-label="Close details">×</button>
+      <div id="detailBody"></div>
+    </aside>
+  </div>
+  <div class="bar">
+    <div class="strip-wrap">
+      <div class="strip-head"><span id="rangeLabel">Drag across the week to focus on a time window</span><button id="clearRange" hidden>Show the whole week</button></div>
+      <svg id="strip" role="img" aria-label="Timeline of earthquakes over the past week; bar height shows magnitude"></svg>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label for="minMag">Minimum magnitude <b id="minMagVal">2.5</b></label><input type="range" id="minMag" min="2.5" max="6.5" step="0.1" value="2.5"></div>
+      <div class="ctl"><span class="lbl">Colour by</span><div class="seg" role="group" aria-label="Colour by"><button id="byMag" aria-pressed="true">Magnitude</button><button id="byDepth" aria-pressed="false">Depth</button></div></div>
+      <div class="ctl"><button class="tog" id="spin" aria-pressed="true">Pause rotation</button></div>
+    </div>
+    <p class="src" id="src"></p>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
