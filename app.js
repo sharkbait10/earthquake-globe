@@ -290,7 +290,8 @@ async function load() {
       .map(f => {
         const [lon, lat, depth] = f.geometry.coordinates;
         const p = f.properties;
-        return { id: f.id, lat, lon, depth: depth ?? 0, mag: p.mag, place: p.place || p.title || 'Unknown location', time: p.time, url: p.url, tsunami: p.tsunami };
+        // Round to one decimal as USGS displays it; the "2.5+" feed includes raw values like 2.46.
+        return { id: f.id, lat, lon, depth: depth ?? 0, mag: Math.round(p.mag * 10) / 10, place: p.place || p.title || 'Unknown location', time: p.time, url: p.url, tsunami: p.tsunami };
       })
       .sort((a, b) => a.time - b.time);
 
