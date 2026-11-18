@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Seven days of earthquakes</title>
+<title>Earthquake Globe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
@@ -14,14 +14,18 @@
   <div id="stage">
     <div id="globe" aria-label="Interactive globe of earthquakes. Drag to rotate, scroll to zoom, click a point for details." role="img"></div>
     <header>
-      <h1>Seven days of earthquakes</h1>
+      <h1 id="title">Seven days of earthquakes</h1>
       <p class="sum" id="sum"></p>
+      <p class="sum new-note" id="newNote" hidden></p>
     </header>
     <div class="legend" id="legend"></div>
     <div class="notice" id="notice" role="alert" hidden>
-      <p class="notice-title">We couldn’t reach the earthquake feed</p>
+      <p class="notice-title" id="noticeTitle">We couldn’t reach the earthquake feed</p>
       <p class="notice-body" id="noticeBody"></p>
-      <button type="button" id="retry">Try again</button>
+      <div class="notice-actions">
+        <button type="button" id="retry">Try again</button>
+        <button type="button" id="dismissNotice" class="secondary" hidden>Keep current view</button>
+      </div>
     </div>
     <aside class="detail" id="detail" hidden aria-live="polite">
       <button class="close" id="close" aria-label="Close details">×</button>
@@ -30,15 +34,24 @@
   </div>
   <div class="bar">
     <div class="strip-wrap">
-      <div class="strip-head"><span id="rangeLabel">Drag across the week to focus on a time window</span><button id="clearRange" hidden>Show the whole week</button></div>
-      <svg id="strip" role="img" aria-label="Timeline of earthquakes over the past week; bar height shows magnitude"></svg>
+      <div class="strip-head"><span id="rangeLabel">Drag across the timeline to focus on a time window</span><button id="clearRange" hidden>Show the whole range</button></div>
+      <svg id="strip" role="img" aria-label="Timeline of earthquakes; bar height shows magnitude"></svg>
     </div>
     <div class="controls">
+      <div class="ctl"><span class="lbl">Time span</span>
+        <div class="seg" id="spanSeg" role="group" aria-label="Time span">
+          <button data-span="hour" aria-pressed="false">Hour</button><button data-span="day" aria-pressed="false">Day</button><button data-span="week" aria-pressed="true">Week</button><button data-span="month" aria-pressed="false">Month</button>
+        </div>
+      </div>
       <div class="ctl"><label for="minMag">Minimum magnitude <b id="minMagVal">2.5</b></label><input type="range" id="minMag" min="2.5" max="6.5" step="0.1" value="2.5"></div>
       <div class="ctl"><span class="lbl">Colour by</span><div class="seg" role="group" aria-label="Colour by"><button id="byMag" aria-pressed="true">Magnitude</button><button id="byDepth" aria-pressed="false">Depth</button></div></div>
       <div class="ctl"><button class="tog" id="spin" aria-pressed="true">Pause rotation</button></div>
     </div>
-    <p class="src" id="src"></p>
+    <p class="src">
+      <span>Data: <a href="https://earthquake.usgs.gov/earthquakes/feed/" target="_blank" rel="noopener">USGS earthquake feed</a>, magnitude 2.5 and above. Land outlines from Natural Earth.</span>
+      <span class="fresh" id="fresh" aria-live="polite"></span>
+      <label class="auto"><input type="checkbox" id="autoRefresh" checked> Auto-refresh <span id="autoEvery">every minute</span></label>
+    </p>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
