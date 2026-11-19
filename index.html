@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
 <!-- Bump ?v= on these three files with each release so browsers don’t mix cached old files with new ones. -->
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <div class="app">
@@ -46,6 +46,9 @@
       </div>
       <div class="ctl"><label for="minMag">Minimum magnitude <b id="minMagVal">2.5</b></label><input type="range" id="minMag" min="2.5" max="6.5" step="0.1" value="2.5"></div>
       <div class="ctl"><span class="lbl">Colour by</span><div class="seg" role="group" aria-label="Colour by"><button id="byMag" aria-pressed="true">Magnitude</button><button id="byDepth" aria-pressed="false">Depth</button></div></div>
+      <div class="ctl"><span class="lbl">Context</span>
+        <div class="chips"><button type="button" class="chip" id="platesChip" aria-pressed="true"><span class="hz-mini plate-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M1.5 9.5 5 6.5l3 2.5 3.5-4 3 2"/></svg></span>Plate boundaries <span class="count"></span></button></div>
+      </div>
       <div class="ctl"><span class="lbl">Active hazards</span>
         <div class="chips" id="hazardChips" role="group" aria-label="Hazard layers from NASA EONET">
           <button type="button" class="chip" data-layer="volcanoes" aria-pressed="false">Volcanoes <span class="count"></span></button><button type="button" class="chip" data-layer="wildfires" aria-pressed="false">Wildfires <span class="count"></span></button><button type="button" class="chip" data-layer="severeStorms" aria-pressed="false">Storms <span class="count"></span></button>
@@ -54,7 +57,7 @@
       <div class="ctl"><button class="tog" id="spin" aria-pressed="true">Pause rotation</button></div>
     </div>
     <p class="src">
-      <span>Data: <a href="https://earthquake.usgs.gov/earthquakes/feed/" target="_blank" rel="noopener">USGS earthquake feed</a>, magnitude 2.5 and above. Hazards: <a href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener">NASA EONET</a>. Land outlines from Natural Earth.</span>
+      <span>Data: <a href="https://earthquake.usgs.gov/earthquakes/feed/" target="_blank" rel="noopener">USGS earthquake feed</a>, magnitude 2.5 and above. Hazards: <a href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener">NASA EONET</a>. Plate boundaries: <a href="https://doi.org/10.1029/2001GC000252" target="_blank" rel="noopener">Bird (2003)</a>, via <a href="https://github.com/fraxen/tectonicplates" target="_blank" rel="noopener">Ahlenius/Nordpil</a> (ODC-BY). Land outlines from Natural Earth.</span>
       <span class="fresh" id="fresh" aria-live="polite"></span>
       <label class="auto"><input type="checkbox" id="autoRefresh" checked> Auto-refresh <span id="autoEvery">every minute</span></label>
     </p>
@@ -62,7 +65,8 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js"></script>
-<script src="app.js?v=6"></script>
-<script src="hazards.js?v=6"></script>
+<script src="app.js?v=7"></script>
+<script src="plates.js?v=7"></script>
+<script src="hazards.js?v=7"></script>
 </body>
 </html>

@@ -122,3 +122,11 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 /* With the hazard toggles the controls no longer fit beside the timeline: give the timeline its own full-width row. */
 .bar{grid-template-columns:1fr}
 .controls{row-gap:12px}
+/* context layer: tectonic plate boundaries */
+:root{--plate:#7D8C91;--plate-sub:#6A4FB0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--plate:#8FA3A8;--plate-sub:#B49CF5}}
+:root[data-theme="dark"]{--plate:#8FA3A8;--plate-sub:#B49CF5}
+.plate-icon{color:var(--plate-sub)}
+.line-swatch{display:inline-block;width:16px;height:0;border-top:1.5px solid var(--plate);border-radius:0!important}
+.line-swatch.sub{border-top:2.5px solid var(--plate-sub)}
+.plate-stat b{color:var(--plate-sub)}

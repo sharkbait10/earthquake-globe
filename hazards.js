@@ -89,23 +89,23 @@ world
   .htmlElementVisibilityModifier((el, isVisible) => {
     el.style.opacity = isVisible ? '1' : '0';
     el.style.pointerEvents = isVisible ? '' : 'none';
-  })
-  .pathPoints('track').pathPointLat('lat').pathPointLng('lng').pathPointAlt(0.008)
-  .pathStroke(2.2)
-  .pathDashLength(0.06).pathDashGap(0.012)
-  .pathDashAnimateTime(reduceMotion ? 0 : 9000)
-  .pathTransitionDuration(0)
-  .pathLabel(h => `<div class="tip"><b>${esc(h.title)}</b> · track since ${fmtTime(h.track[0].date)}</div>`)
-  .onPathClick(h => showHazard(h));
+  });
+
+// Storm tracks go on the shared line layer (see setPaths in app.js).
+pathStyles.severeStorms = {
+  color: () => css('--hz-storm'),
+  stroke: 2.2,
+  dashLength: 0.06, dashGap: 0.012, animateMs: 9000,
+  label: h => `<div class="tip"><b>${esc(h.title)}</b> · track since ${fmtTime(h.track[0].date)}</div>`,
+  onClick: h => showHazard(h),
+};
 
 function renderHazards() {
   const shown = Object.keys(LAYERS).filter(k => hazardState[k].on && hazardState[k].status === 'ok').flatMap(k => hazardState[k].items);
   world.htmlElementsData(shown);
-  const storm = css('--hz-storm');
-  world.pathsData(shown.filter(h => h.kind === 'severeStorms' && h.track.length > 1)).pathColor(() => storm);
+  setPaths('storms', shown.filter(h => h.kind === 'severeStorms' && h.track.length > 1));
   if (typeof render === 'function' && quakes.length) render(); // refresh the legend
 }
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderHazards);
 
 // Legend entries for the layers that are on (app.js appends this to its legend).
 function hazardLegend() {

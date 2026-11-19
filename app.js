@@ -130,6 +130,29 @@ const world = Globe()(el)
 world.controls().autoRotateSpeed = 0.45;
 world.pointOfView({ lat: 15, lng: 150, altitude: 2.4 });
 
+// ---------- shared line layer ----------
+// globe.gl has a single paths layer, shared by storm tracks (hazards.js) and plate boundaries (plates.js).
+// Each module registers a style for its `kind` and hands its lines to setPaths(); every line has a `track` of {lat, lng}.
+const pathStyles = {};
+const pathLayers = {};
+const pathStyle = d => pathStyles[d.kind] || {};
+function refreshPaths() {
+  world
+    .pathColor(d => pathStyle(d).color?.(d) ?? css('--ink'))
+    .pathsData(Object.values(pathLayers).flat());
+}
+function setPaths(layer, lines) { pathLayers[layer] = lines; refreshPaths(); }
+world
+  .pathPoints('track').pathPointLat('lat').pathPointLng('lng').pathPointAlt(0.008)
+  .pathStroke(d => pathStyle(d).stroke ?? 1)
+  .pathDashLength(d => pathStyle(d).dashLength ?? 1)
+  .pathDashGap(d => pathStyle(d).dashGap ?? 0)
+  .pathDashAnimateTime(d => reduceMotion ? 0 : (pathStyle(d).animateMs ?? 0))
+  .pathTransitionDuration(0)
+  .pathLabel(d => pathStyle(d).label?.(d) ?? '')
+  .onPathClick(d => pathStyle(d).onClick?.(d));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', refreshPaths);
+
 function applyTheme() {
   world.polygonCapColor(() => css('--land')).polygonStrokeColor(() => css('--land-edge')).atmosphereColor(css('--atmo'));
   const m = world.globeMaterial();
@@ -158,7 +181,7 @@ function render() {
   const s = SPANS[span];
   const big = v.reduce((m, q) => !m || q.mag > m.mag ? q : m, null);
   $('sum').innerHTML = v.length
-    ? `<b>${v.length}</b> earthquake${v.length === 1 ? '' : 's'} of magnitude ${minMag.toFixed(1)} or more${range ? ' in the selected window' : ` in the past ${s.word}`}. The largest was <b>M ${big.mag.toFixed(1)}</b>, ${esc(big.place)}.`
+    ? `<b>${v.length}</b> earthquake${v.length === 1 ? '' : 's'} of magnitude ${minMag.toFixed(1)} or more${range ? ' in the selected window' : ` in the past ${s.word}`}. The largest was <b>M ${big.mag.toFixed(1)}</b>, ${esc(big.place)}.${typeof plateSummary === 'function' ? plateSummary(v) : ''}`
     : `No earthquakes match${quakes.length ? '' : ` in the past ${s.word}`}. ${quakes.length ? 'Lower the minimum magnitude or widen the time window.' : 'Try a longer time span.'}`;
 
   renderNewNote();
@@ -171,6 +194,7 @@ function render() {
     : [[10, 'Shallow, under 70 km'], [150, 'Intermediate'], [500, 'Deep, over 300 km']].map(([d, l]) =>
         `<span><i style="width:10px;height:10px;background:${colour({ depth: d })}"></i>${l}</span>`).join(''))
     + (lastVisit != null ? `<span><i style="width:10px;height:10px;background:none;border:2px solid ${focus}"></i>New since last visit</span>` : '')
+    + (typeof plateLegend === 'function' ? plateLegend() : '')
     + (typeof hazardLegend === 'function' ? hazardLegend() : '');
 
   drawStrip();
